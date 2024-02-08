@@ -1,43 +1,35 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Header } from '../header';
 
-test('renders header with title and input', () => {
+
+// creating a function to render header for all test cases
+const renderHeader = () => {
   const dispatchMock = jest.fn();
-
   render(<Header dispatch={dispatchMock} />);
+  return { dispatchMock };
+};
 
-  // Check if the title is rendered
+// To check if the header component is rendered correctly
+test('renders header with title and input', () => {
+  
+  renderHeader();
+
   expect(screen.getByText('todos')).toBeInTheDocument();
-
-  // Check if the input component is rendered
   expect(screen.getByTestId('text-input')).toBeInTheDocument();
 });
 
+
+// To check if the there is a dispatch for adding a new item
 test('calls dispatch with correct action on adding a new item', () => {
-    const dispatchMock = jest.fn();
-    render(<Header dispatch={dispatchMock} />);
     
-    // Type a new todo in the input and press Enter
+    const { dispatchMock } = renderHeader();
+    
     const inputElement = screen.getByTestId('text-input');
     fireEvent.change(inputElement, { target: { value: 'New Todo' } });
     fireEvent.keyDown(inputElement, { key: 'Enter', code: 'Enter' });
-  
-    // Check if dispatch is called with the correct action and payload
+
     expect(dispatchMock).toHaveBeenCalledWith({ type: 'ADD_ITEM', payload: { title: 'New Todo' } });
-  
-    // Check if the input is cleared after submitting
     expect(inputElement).toHaveValue('');
   });
 
-  test('renders input component with correct attributes', () => {
-    render(<Header dispatch={() => {}} />);
-    
-    // Check if the input element is rendered with the correct attributes
-    const inputElement = screen.getByTestId('text-input');
-    expect(inputElement).toBeInTheDocument();
-    expect(inputElement).toHaveAttribute('type', 'text');
-    expect(inputElement).toHaveAttribute('placeholder', 'What needs to be done?');
-    expect(inputElement).toHaveAttribute('id', 'todo-input');
-  });

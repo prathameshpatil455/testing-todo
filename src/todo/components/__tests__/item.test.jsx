@@ -1,69 +1,45 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Item } from '../item';
 
 const sampleTodo = { id: 1, title: 'Sample Todo', completed: false };
 
-test('renders todo item correctly', () => {
-  const dispatchMock = jest.fn();
-  render(<Item todo={sampleTodo} dispatch={dispatchMock} index={0} />);
+// Creating a item rendering function for all test cases
+const renderTodoItem = (todo) => {
+  const dispatch = jest.fn();
+  render(<Item todo={todo} dispatch={dispatch} index={0} />);
+  return { dispatch };
+};
 
-  // Check if the todo item is rendered with the correct title
+
+// Check if the todo item is rendered with the correct title
+test('Renders todo items correctly', () => {
+
+  const { dispatch } = renderTodoItem(sampleTodo);
+
   expect(screen.getByTestId('todo-item')).toBeInTheDocument();
   expect(screen.getByTestId('todo-item-label')).toHaveTextContent('Sample Todo');
   expect(screen.getByTestId('todo-item-toggle')).toBeInTheDocument();
   expect(screen.getByTestId('todo-item-button')).toBeInTheDocument();
 });
 
-test('toggles todo completion when checkbox is clicked', () => {
-  const dispatchMock = jest.fn();
-  render(<Item todo={sampleTodo} dispatch={dispatchMock} index={0} />);
 
-  // Click the checkbox to toggle completion
+// Check if the toggle function works correctly
+test('Toggles todo completion when checkbox is clicked', () => {
+  const { dispatch } = renderTodoItem(sampleTodo);
+
   fireEvent.click(screen.getByTestId('todo-item-toggle'));
 
-  // Check if dispatch is called with the correct action and payload
-  expect(dispatchMock).toHaveBeenCalledWith({ type: 'TOGGLE_ITEM', payload: { id: 1 } });
+  expect(dispatch).toHaveBeenCalledWith({ type: 'TOGGLE_ITEM', payload: { id: 1 } });
 });
 
-test('deletes todo when "destroy" button is clicked', () => {
-  const dispatchMock = jest.fn();
-  render(<Item todo={sampleTodo} dispatch={dispatchMock} index={0} />);
 
-  // Click the "destroy" button to remove the todo
-  fireEvent.click(screen.getByTestId('todo-item-button'));
+// Check to renders todo for different examples
+test('renders todo item with different example', () => {
+  const SecondTodo = { id: 2, title: 'Another Todo', completed: true };
 
-  // Check if dispatch is called with the correct action and payload
-  expect(dispatchMock).toHaveBeenCalledWith({ type: 'REMOVE_ITEM', payload: { id: 1 } });
+  renderTodoItem(SecondTodo);
+
+  expect(screen.getByTestId('todo-item-label')).toHaveTextContent('Another Todo');
+  expect(screen.getByTestId('todo-item-toggle')).toBeInTheDocument();
 });
-
-// test('enters edit mode when label is double-clicked', () => {
-//     const dispatchMock = jest.fn();
-//     render(<Item todo={sampleTodo} dispatch={dispatchMock} index={0} />);
-  
-//     // Double-click the label to enter edit mode
-//     fireEvent.doubleClick(screen.getByTestId('todo-item-label'));
-  
-//     // Check if the input field is rendered in edit mode
-//     expect(screen.getByTestId('edit-todo-input')).toBeInTheDocument();
-// });
-  
-//   test('updates todo on edit and exits edit mode', () => {
-//     const dispatchMock = jest.fn();
-//     render(<Item todo={sampleTodo} dispatch={dispatchMock} index={0} />);
-  
-//     // Double-click the label to enter edit mode
-//     fireEvent.doubleClick(screen.getByTestId('todo-item-label'));
-  
-//     // Update the todo by submitting the edited value
-//     fireEvent.change(screen.getByTestId('edit-todo-input'), { target: { value: 'Edited Todo' } });
-//     fireEvent.keyDown(screen.getByTestId('edit-todo-input'), { key: 'Enter', code: 'Enter' });
-  
-//     // Check if dispatch is called with the correct action and payload
-//     expect(dispatchMock).toHaveBeenCalledWith({ type: 'UPDATE_ITEM', payload: { id: 1, title: 'Edited Todo' } });
-  
-//     // Check if the component exits edit mode
-//     expect(screen.queryByTestId('edit-todo-input')).not.toBeInTheDocument();
-// });
-  

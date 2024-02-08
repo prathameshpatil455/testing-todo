@@ -39,13 +39,13 @@ export const Item = memo(function Item({ todo, dispatch, index }) {
                 {isWritable ? (
                     <Input onSubmit={handleUpdate} label="Edit Todo Input" defaultValue={title} onBlur={handleBlur} />
                 ) : (
-                    <>
+                    <div className="wrapper">
                         <input className="toggle" type="checkbox" data-testid="todo-item-toggle" checked={completed} onChange={toggleItem} />
                         <label data-testid="todo-item-label" onDoubleClick={handleDoubleClick}>
                             {title}
                         </label>
-                        <button className="destroy" data-testid="todo-item-button" onClick={removeItem} />
-                    </>
+                        <button className="destroy" data-testid="todo-item-button" onClick={removeItem}>X</button>
+                    </div>
                 )}
             </div>
         </li>
